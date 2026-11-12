@@ -1,0 +1,14 @@
+file,true,tone,predicted,confidence,skin_found,correct
+acne on dark brown skin.,Acne / Rosacea,dark,Psoriasis,37.7,yes,NO
+acne-face-indian.jpg,Acne / Rosacea,indian,Acne / Rosacea,93.1,yes,YES
+acne-on face light.jpg,Acne / Rosacea,light,Acne / Rosacea,86.1,yes,YES
+eczema on dark skin.jpeg,Eczema,dark,Psoriasis,44.9,yes,NO
+eczma indian.jpg,Eczema,indian,Eczema,49.1,yes,YES
+eczma light.jpg,Eczema,light,Eczema,48.2,yes,YES
+melanoma mole light.jpg,Melanoma,light,Psoriasis,30.7,yes,NO
+posaris indian.jpg,Psoriasis,indian,Psoriasis,55.9,yes,YES
+posaris on elbiw light.j,Psoriasis,light,Eczema,46.9,NO,NO
+psoriasis on dark skin.j,Psoriasis,dark,Eczema,43.4,yes,NO
+psoriasis-plaques-brown-,Psoriasis,brown,Melanoma,69.0,yes,NO
+ringworm-body1 indian.jp,Fungal Infection,indian,Fungal Infection,77.7,yes,YES
+ringworm-on-an-arm light,Fungal Infection,light,Psoriasis,27.6,yes,NO

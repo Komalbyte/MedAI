@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MedAI - Skin Disease Analysis</title>
+  <style>
+    body {
+      font-family: -apple-system, Arial, sans-serif;
+      background: #f4f7fb;
+      margin: 0;
+      color: #1b2a3a;
+    }
+
+    .wrap {
+      max-width: 760px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+
+    h1 {
+      margin-bottom: 4px;
+    }
+
+    .sub {
+      color: #5b6b7c;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .06);
+      margin-bottom: 20px;
+    }
+
+    button {
+      background: #2563eb;
+      color: #fff;
+      border: 0;
+      padding: 11px 22px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .imgs {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .imgs figure {
+      margin: 0;
+      text-align: center;
+      font-size: 13px;
+      color: #5b6b7c;
+    }
+
+    .imgs img {
+      max-width: 300px;
+      max-height: 260px;
+      border-radius: 10px;
+    }
+
+    .label {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .bar {
+      background: #e5eaf1;
+      border-radius: 6px;
+      height: 14px;
+      margin: 4px 0 10px;
+    }
+
+    .bar div {
+      background: #2563eb;
+      height: 14px;
+      border-radius: 6px;
+    }
+
+    .warn {
+      background: #fff4e5;
+      border-left: 4px solid #f59e0b;
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin-top: 12px;
+    }
+
+    .err {
+      color: #b91c1c;
+    }
+
+    .note {
+      font-size: 13px;
+      color: #5b6b7c;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <h1>MedAI</h1>
+    <div class="sub">AI-assisted skin disease screening</div>
+
+    <div class="card">
+      <form method="post" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" required>
+        <button type="submit">Analyze</button>
+      </form>
+    </div>
+
+    {% if result %}
+    <div class="card">
+      {% if result.not_skin %}
+      <div class="imgs">
+        <figure><img src="{{ url_for('static', filename=result.orig) }}"><br>Uploaded image</figure>
+      </div>
+      <div class="warn">This does not look like a skin photo, so no analysis was done. Please upload a clear, close
+        photo of the skin.</div>
+      {% elif result.error %}
+      <div class="err">{{ result.error }}</div>
+      {% else %}
+      <div class="imgs">
+        <figure><img src="{{ url_for('static', filename=result.orig) }}"><br>Uploaded image</figure>
+        <figure><img src="{{ url_for('static', filename=result.crop) }}"><br>
+          Skin region detected ({{ "%.0f"|format(result.skin_pct) }}% of image)
+        </figure>
+      </div>
+      <p>Prediction</p>
+      <div class="label">{{ result.label }}</div>
+      <div>Confidence: {{ "%.1f"|format(result.confidence) }}%</div>
+
+      {% if result.normal %}
+      <div class="warn">No skin disease from our list was found. This does not mean the skin is healthy.</div>
+      {% endif %}
+      {% if result.pigmented %}
+      <div class="warn">This looks like a mole or dark spot. I cannot tell if it is dangerous. Please see a
+        dermatologist.</div>
+      {% endif %}
+      {% if result.low %}
+      <div class="warn">Low confidence. Please consult a dermatologist.</div>
+      {% endif %}
+
+      <h4>Top 3 possibilities</h4>
+      {% for name, p in result.top3 %}
+      <div>{{ name }} - {{ "%.1f"|format(p) }}%</div>
+      <div class="bar">
+        <div style="width: {{ p }}%"></div>
+      </div>
+      {% endfor %}
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="note">This is a screening aid for educational purposes, not a medical diagnosis.</div>
+  </div>
+</body>
+
+</html>
