@@ -57,7 +57,15 @@ def index():
 
                 rgb = cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
                 probs = clf.predict_proba((features(rgb) - MU) / SD)[0]
-                order = np.argsort(probs)[::-1]
+                order = list(np.argsort(probs)[::-1])
+                top_p = float(probs[order[0]])
+
+                unsure_normal = False
+                if CLASSES[order[0]] == "Normal" and top_p < NORMAL_CONFIDENCE:
+                    # not sure the skin is healthy: rank the diseases only
+                    order = [i for i in order if CLASSES[i] != "Normal"]
+                    unsure_normal = True
+
                 top = [(CLASSES[i], float(probs[i]) * 100) for i in order[:3]]
                 top_name = CLASSES[order[0]]
                 top_p = float(probs[order[0]])
@@ -65,9 +73,9 @@ def index():
                     "label": top[0][0],
                     "confidence": top[0][1],
                     "top3": top,
-                    "low": top_p < LOW_CONFIDENCE,
+                    "low": top_p < LOW_CONFIDENCE or unsure_normal,
                     "pigmented": top_name == "Pigmented lesion",
-                    "normal": top_name == "Normal" and top_p >= NORMAL_CONFIDENCE,
+                    "normal": top_name == "Normal",
                     "skin_found": found,
                     "skin_pct": frac * 100,
                     "orig": "uploads/" + name + "_orig.jpg",
